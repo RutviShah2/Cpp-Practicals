@@ -1,22 +1,18 @@
 #include <iostream>
 #include <fstream> // For file handling
-#include <cstring> // For using char arrays (like strings without STL)
-
 using namespace std;
 
-//
-// 🧑‍🏫 Base class for all players
-//
+// Base class for all players
 class Player {
 protected:
-    char name[50];     // Player's name
-    char marker;       // 'X' or 'O'
-    int wins;          // Number of games won
+    string name;     // Player's name
+    char marker;     // 'X' or 'O'
+    int wins;        // Number of games won
 
 public:
     // Constructor to initialize the player
-    Player(const char* n, char m) {
-        strcpy(name, n);
+    Player(string n, char m) {
+        name = n;
         marker = m;
         wins = 0;
     }
@@ -25,26 +21,24 @@ public:
     virtual void makeMove(char board[3][3]) = 0;
 
     // Getters
-    const char* getName() { return name; }
+    string getName() { return name; }
     char getMarker() { return marker; }
     int getWins() { return wins; }
 
     // Increase win count
     void addWin() { wins++; }
 
-    // 👉 Operator Overloading to compare wins between two players
+    // Operator Overloading to compare wins between two players
     bool operator > (Player& p) {
         return this->wins > p.getWins();
     }
 };
 
-//
-// 🧍 Derived class for a human player
-//
+// Derived class for a human player
 class HumanPlayer : public Player {
 public:
     // Constructor that just calls the base one
-    HumanPlayer(const char* n, char m) : Player(n, m) {}
+    HumanPlayer(string n, char m) : Player(n, m) {}
 
     // Function to take user input and place marker on board
     void makeMove(char board[3][3]) override {
@@ -77,9 +71,7 @@ public:
     }
 };
 
-//
-// 🕹 Game class that manages the board and gameplay
-//
+// Game class that manages the board and gameplay
 class TicTacToe {
     char board[3][3];   // 3x3 board
     Player* p1;
@@ -130,7 +122,7 @@ public:
     }
 
     // Save the game result to a text file
-    void saveResult(const char* result) {
+    void saveResult(string result) {
         ofstream file("game_results.txt", ios::app);
         if (file.is_open()) {
             file << result << endl;
@@ -141,9 +133,9 @@ public:
     // Read and show previous game results from the file
     void showGameHistory() {
         ifstream file("game_results.txt");
-        char line[100];
-        cout << "\n📜 Game History:\n";
-        while (file.getline(line, 100)) {
+        string line;
+        cout << "\n Game History:\n";
+        while (getline(file, line)) {
             cout << line << endl;
         }
         file.close();
@@ -162,28 +154,25 @@ public:
                 cout << "🎉 " << current->getName() << " wins the game!\n";
                 current->addWin();
 
-                char result[100];
-                sprintf(result, "%s won the game!", current->getName());
+                string result = current->getName() + " won the game!";
                 saveResult(result);
                 return;
             }
         }
 
-        cout << "🤝 It's a draw!\n";
+        cout << "It's a draw!\n";
         saveResult("Game ended in a draw.");
     }
 };
 
-//
-// 🌟 MAIN FUNCTION – where everything starts
-//
+// MAIN FUNCTION – where everything starts
 int main() {
     cout << "=============================\n";
     cout << "     Advanced Tic Tac Toe    \n";
     cout << "=============================\n";
 
     // Take names from the users
-    char name1[50], name2[50];
+    string name1, name2;
     cout << "Enter Player 1 Name: ";
     cin >> name1;
     cout << "Enter Player 2 Name: ";
@@ -198,7 +187,7 @@ int main() {
     game.play();
 
     // Compare player wins
-    cout << "\n🏆 Comparing Wins:\n";
+    cout << "\n Comparing Wins:\n";
     if (p1 > p2)
         cout << p1.getName() << " is the champion so far!\n";
     else if (p2 > p1)
